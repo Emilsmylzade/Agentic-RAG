@@ -1,17 +1,3 @@
-"""
-agent.py — The Agentic RAG brain.
-
-Uses OpenAI Agents SDK to create an agent that can decide its own
-retrieval strategy using the tools defined in tools.py.
-
-The agent:
-  - Receives the user's question
-  - Decides which tools to call (vector search, keyword search, rerank, etc.)
-  - Can call tools multiple times in a loop
-  - Self-evaluates its answer and retries if needed
-  - Returns a polished final answer
-"""
-
 import asyncio
 from agents import Agent, Runner
 
@@ -24,10 +10,6 @@ from tools import (
 )
 from config import AGENT_MODEL, MAX_EVAL_RETRIES
 
-
-# ═══════════════════════════════════════════════════════════════════
-# System prompt — this is the "brain" of the agent
-# ═══════════════════════════════════════════════════════════════════
 
 SYSTEM_PROMPT = f"""You are an expert knowledge worker for InsurElm, an insurance technology company.
 You answer questions accurately using the company's internal knowledge base.
@@ -69,11 +51,6 @@ You have 5 tools. Use them intelligently:
 - Today's date is available if needed for context
 """
 
-
-# ═══════════════════════════════════════════════════════════════════
-# Agent definition
-# ═══════════════════════════════════════════════════════════════════
-
 rag_agent = Agent(
     name="InsurElm Knowledge Worker",
     instructions=SYSTEM_PROMPT,
@@ -88,26 +65,9 @@ rag_agent = Agent(
 )
 
 
-# ═══════════════════════════════════════════════════════════════════
-# Runner functions
-# ═══════════════════════════════════════════════════════════════════
-
 async def ask_agent(question: str, history: list[dict] = None) -> str:
-    """
-    Ask the agent a question and get back an answer.
-
-    Args:
-        question: The user's question
-        history: Optional conversation history as a list of
-                 {"role": "user"/"assistant", "content": "..."} dicts
-
-    Returns:
-        The agent's final answer as a string
-    """
-    # Build the messages list
     messages = []
 
-    # Add conversation history if provided
     if history:
         for msg in history:
             messages.append({
@@ -115,26 +75,16 @@ async def ask_agent(question: str, history: list[dict] = None) -> str:
                 "content": msg["content"],
             })
 
-    # Add the current question
     messages.append({"role": "user", "content": question})
 
-    # Run the agent
     result = await Runner.run(rag_agent, input=messages)
 
     return result.final_output
 
 
 def ask_agent_sync(question: str, history: list[dict] = None) -> str:
-    """
-    Synchronous wrapper for ask_agent.
-    Use this from non-async code (like Gradio callbacks).
-    """
     return asyncio.run(ask_agent(question, history))
 
-
-# ═══════════════════════════════════════════════════════════════════
-# Quick test
-# ═══════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     print("Testing the Agentic RAG agent...")

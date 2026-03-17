@@ -1,28 +1,13 @@
-"""
-app.py — Gradio chat interface for the Agentic RAG system.
-
-Run with:
-    python app.py
-"""
-
 import asyncio
 import gradio as gr
-from agents import Agent, Runner
+from agents import Runner
 
 from agent import rag_agent
 
 
 async def _stream_response(message: str, history: list) -> str:
-    """
-    Process a chat message through the agentic RAG system.
-
-    Gradio gives us `history` as a list of {"role": ..., "content": ...} dicts.
-    We convert that into the format our agent expects.
-    """
-    # Build messages for the agent
     messages = []
 
-    # Add conversation history if provided
     if history:
         for msg in history:
             messages.append({
@@ -30,23 +15,16 @@ async def _stream_response(message: str, history: list) -> str:
                 "content": msg["content"],
             })
 
-    # Add the current question
     messages.append({"role": "user", "content": message})
 
-    # Run the agent
     result = await Runner.run(rag_agent, input=messages)
 
     return result.final_output
 
 
 def chat(message: str, history: list) -> str:
-    """Synchronous wrapper for Gradio."""
     return asyncio.run(_stream_response(message, history))
 
-
-# ═══════════════════════════════════════════════════════════════════
-# Build the Gradio interface
-# ═══════════════════════════════════════════════════════════════════
 
 with gr.Blocks() as demo:
 
