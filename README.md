@@ -2,6 +2,9 @@
 
 An agentic Retrieval-Augmented Generation (RAG) system built with the **OpenAI Agents SDK**, **ChromaDB**, and **Gradio**.
 
+This project accompanies the Medium article  
+[**Agentic RAG: Advanced Techniques and Rethinking Evaluation**](https://medium.com/@ismayilzadeemil0707/agentic-rag-advanced-techniques-and-rethinking-evaluation-d76c8e4a9b6a)
+
 Unlike a fixed retrieve-then-answer pipeline, this project lets an AI agent decide **how to search**, **when to rerank**, **when to use keyword search**, and **when to self-evaluate its answer before responding**.
 
 This project is based on an internal company-style knowledge base for **InsurElm**, containing documents about employees, products, contracts, and company information.
